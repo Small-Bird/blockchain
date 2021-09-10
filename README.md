@@ -1,40 +1,25 @@
-# blockchain
-a blockchain demo to describe work amount 
+Microsoft Windows [版本 10.0.22000.132]
+(c) Microsoft Corporation。保留所有权利。
 
-Run:
+D:\blockchain-master\blockchain-master>testProject
+00000c629224cd017d3b94b88a3d3491c186e1a79295be19bdef2f87df689c4f
 
-go run main.go utils.go proofwork.go blockchain.go block.go
+使用信息：
+addblock -data 交易信息-添加区块
+printchain -遍历区块并打印
 
-You will get result:
+D:\blockchain-master\blockchain-master>testProject addblock -data 测试
+0000091c969bd86e334c33d2f573ef35af6c2cde41fa2a84682f2c3935e79a4b
 
+成功添加新区块
 
-eMacBook-Pro blockchain % go run main.go utils.go proofwork.go blockchain.go block.go
-00000c63b72239b92c5b4157a9b8eaa34b3e32dfbd8f54d74100abbe4e7d39bc
+D:\blockchain-master\blockchain-master>testProject addblock -data 测试2
+00000cc085c49853e4096a774b474201ff86e95ddc92f7522fbf121ad713f5ef
 
-00000c45c5effe1376c1ba074c6e784250bd8d3b2517607947b1fc8268e87c34
+成功添加新区块
 
-0000059a8d5a7ac14b69452fe0f759df0f76a879677bfaad82f1202a4d0161ed
-
-000003b6ebe32a7b021869b7343904821b4b2be856c71534b2150186af0965e7
-
-[]
-[231 172 172 228 184 128 228 184 170 229 140 186 229 157 151]
-[0 0 12 99 183 34 57 185 44 91 65 87 169 184 234 163 75 62 50 223 189 143 84 215 65 0 171 190 78 125 57 188]
-true
-
-[0 0 12 99 183 34 57 185 44 91 65 87 169 184 234 163 75 62 50 223 189 143 84 215 65 0 171 190 78 125 57 188]
-[97]
-[0 0 12 69 197 239 254 19 118 193 186 7 76 110 120 66 80 189 141 59 37 23 96 121 71 177 252 130 104 232 124 52]
-true
-
-[0 0 12 69 197 239 254 19 118 193 186 7 76 110 120 66 80 189 141 59 37 23 96 121 71 177 252 130 104 232 124 52]
-[98]
-[0 0 5 154 141 90 122 193 75 105 69 47 224 247 89 223 15 118 168 121 103 123 250 173 130 241 32 42 77 1 97 237]
-true
-
-[0 0 5 154 141 90 122 193 75 105 69 47 224 247 89 223 15 118 168 121 103 123 250 173 130 241 32 42 77 1 97 237]
-[99]
-[0 0 3 182 235 227 42 123 2 24 105 183 52 57 4 130 27 75 43 232 86 199 21 52 178 21 1 134 175 9 101 231]
-true
-
-
+D:\blockchain-master\blockchain-master>testProject printchain
+上一个区块的Hash：
+区块信息：第一个区块
+当前区块的Hash：00000c629224cd017d3b94b88a3d3491c186e1a79295be19bdef2f87df689c4f
+Pow: true

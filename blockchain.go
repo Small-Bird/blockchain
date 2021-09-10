@@ -71,3 +71,7 @@ func (bc *BlockChain) AddBlock(data string) {
 		return nil
 	})
 }
+func (bc *BlockChain) Iterator() *BlockChainIterator {
+	bci := &BlockChainIterator{bc.tip, bc.db}
+	return bci
+}
