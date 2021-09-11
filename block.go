@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"encoding/gob"
 	"log"
 	"time"
@@ -10,34 +9,27 @@ import (
 
 type Block struct {
 	Timestamp    int64
-	Data         []byte
+	Transactions []*Transaction
 	PreBlockHash []byte
 	Hash         []byte
 	Nonce        int
 }
 
-func (b *Block) SetHash() {
-	timestap := IntToHex(b.Timestamp)
-	headers := bytes.Join([][]byte{timestap, b.Data, b.PreBlockHash}, []byte{})
-	hash := sha256.Sum256(headers)
-	b.Hash = hash[:]
-}
-func NewBlock(data string, preBlockHash []byte) *Block {
+func NewBlock(Transactions []*Transaction, preBlockHash []byte) *Block {
 	block := &Block{
 		Timestamp:    time.Now().Unix(),
-		Data:         []byte(data),
+		Transactions: Transactions,
 		PreBlockHash: preBlockHash,
 		Hash:         []byte{},
 	}
-	block.SetHash()
 	pow := NewProofOfWOrk(block)
 	nonce, hash := pow.Run()
 	block.Hash = hash[:]
 	block.Nonce = nonce
 	return block
 }
-func NewFirstBlock() *Block {
-	return NewBlock("第一个区块", []byte{})
+func NewFirstBlock(coinbase *Transaction) *Block {
+	return NewBlock([]*Transaction{coinbase}, []byte{})
 }
 func (b *Block) Serialize() []byte {
 	var result bytes.Buffer

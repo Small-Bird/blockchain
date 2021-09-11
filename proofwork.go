@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"crypto/sha256"
+	"encoding/binary"
 	"fmt"
 	"math"
 	"math/big"
@@ -24,15 +25,35 @@ func NewProofOfWOrk(b *Block) *ProofOfWork {
 	return pow
 }
 func (pow *ProofOfWork) prepareData(nonce int) []byte {
+
 	data := bytes.Join([][]byte{
 		pow.block.PreBlockHash,
-		pow.block.Data,
 		IntToHex(pow.block.Timestamp),
 		IntToHex(int64(targetBits)),
 		IntToHex(int64(nonce)),
 	}, []byte{},
 	)
-	return data
+	var vinData []byte
+	var voutData []byte
+
+	bytesBuffer1 := bytes.NewBuffer([]byte{})
+	bytesBuffer2 := bytes.NewBuffer([]byte{})
+	bytesBuffer3 := bytes.NewBuffer([]byte{})
+
+	for _, transaction := range pow.block.Transactions {
+		for _, vin := range (*transaction).Vin {
+			binary.Write(bytesBuffer1, binary.BigEndian, vin.ScriptSig)
+			binary.Write(bytesBuffer2, binary.BigEndian, vin.Vout)
+
+			vinData = bytes.Join([][]byte{data, vin.Txid, bytesBuffer1.Bytes(), bytesBuffer2.Bytes()}, []byte{})
+		}
+		for _, vout := range (*transaction).Vout {
+			binary.Write(bytesBuffer3, binary.BigEndian, vout.Value)
+
+			voutData = bytes.Join([][]byte{vinData, bytesBuffer3.Bytes()}, []byte{})
+		}
+	}
+	return voutData
 }
 func (pow *ProofOfWork) Run() (int, []byte) {
 	var hashInt big.Int
@@ -54,11 +75,11 @@ func (pow *ProofOfWork) Run() (int, []byte) {
 	return nonce, hash[:]
 
 }
-func (pow* ProofOfWork)Validate() bool  {
+func (pow *ProofOfWork) Validate() bool {
 	var hashInt big.Int
-	data:=pow.prepareData(pow.block.Nonce)
+	data := pow.prepareData(pow.block.Nonce)
 	hash := sha256.Sum256(data)
 	hashInt.SetBytes(hash[:])
-	isValid := hashInt.Cmp(pow.target)==-1
+	isValid := hashInt.Cmp(pow.target) == -1
 	return isValid
 }
