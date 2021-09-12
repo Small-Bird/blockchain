@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/gob"
 	"log"
 	"time"
@@ -48,4 +49,15 @@ func Deserialize(d []byte) *Block {
 		log.Panic(err)
 	}
 	return &block
+}
+func (b *Block) HashTransaction() []byte {
+	var txHashs []byte
+	var txHash [32]byte
+	for _, tx := range b.Transactions {
+		for _, elem := range tx.ID {
+			txHashs = append(txHashs, elem)
+		}
+	}
+	txHash = sha256.Sum256(bytes.Join([][]byte{txHashs}, []byte{}))
+	return txHash[:]
 }

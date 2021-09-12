@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/hex"
 	"fmt"
 	"log"
 	"os"
@@ -103,4 +104,43 @@ func NewBlockChain() *BlockChain {
 	}
 	bc := BlockChain{tip, db}
 	return &bc
+}
+func (bc *BlockChain) FindUnspectedTransactions(address string) []Transaction {
+	var unspentTxs []Transaction
+	spentTxs := make(map[string][]int)
+	bci := bc.Iterator()
+	for {
+		block := bci.Next()
+		for _, tx := range block.Transactions {
+			txID := hex.EncodeToString(tx.ID)
+		OutPuts:
+			for index, out := range tx.Vout {
+				if spentTxs[txID] != nil {
+					for _, spendOut := range spentTxs[string(index)] {
+						if spendOut == index {
+							continue OutPuts
+						}
+					}
+				}
+				if out.CanBeUnlockedWith(address) {
+					unspentTxs = append(unspentTxs, *tx)
+				}
+			}
+			if tx.IsCoinBase() == false {
+				for _, in := range tx.Vin {
+					if in.CanUnlockOutputWith(address) {
+						inTxId := hex.EncodeToString(in.Txid)
+						spentTxs[inTxId] = append(spentTxs[inTxId], in.Vout)
+					}
+				}
+			}
+		}
+		if len(block.PreBlockHash) == 0 {
+			break
+		}
+	}
+	return unspentTxs
+}
+func (tx *Transaction) IsCoinBase() bool {
+	return len(tx.Vin) == 1 && len(tx.Vin[0].Txid) == 0 && tx.Vin[0].Vout == -1
 }
